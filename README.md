@@ -16,3 +16,15 @@ Write a simple command live application to search the data and return the result
 
 ### Search
 
+![alt text](https://github.com/builamquangngoc91/go-training/blob/main/assets/1.png)
+
+![alt text](https://github.com/builamquangngoc91/go-training/blob/main/assets/2.png)
+
+### No result
+
+![alt text](https://github.com/builamquangngoc91/go-training/blob/main/assets/3.png)
+
+### List of searchable fields
+
+![alt text](https://github.com/builamquangngoc91/go-training/blob/main/assets/4.png)
+
