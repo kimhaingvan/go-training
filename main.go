@@ -1,14 +1,15 @@
 package main
 
 import (
-	"awesomeProject1/model"
 	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
+	"workspace/model"
 )
 
 func main() {
@@ -24,14 +25,15 @@ func main() {
 	ticketByteVal, _ := ioutil.ReadAll(ticketJsonFile)
 	organizationByteVal, _ := ioutil.ReadAll(organizationJsonFile)
 
-	var userArr []model.User
-	var ticketArr []model.Ticket
-	var organizationArr []model.Organization
+	var userArr []*model.User
+	var ticketArr []*model.Ticket
+	var organizationArr []*model.Organization
 
 	json.Unmarshal([]byte(userByteVal), &userArr)
 	json.Unmarshal([]byte(ticketByteVal), &ticketArr)
 	json.Unmarshal([]byte(organizationByteVal), &organizationArr)
 
+	model.MappingData(ticketArr, organizationArr, userArr)
 	defer userJsonFile.Close()
 	defer ticketJsonFile.Close()
 	defer organizationJsonFile.Close()
@@ -40,13 +42,14 @@ func main() {
 
 		switch optionStr {
 		case "1":
+			ClearTerminal()
+			reader := bufio.NewReader(os.Stdin)
 			dataTypeStr := DisplayAndReadDataType()
 			field, value := ReadSearchFieldAndVal()
-
+			ClearTerminal()
 			switch dataTypeStr {
 			case "1":
 				users := SearchUsers(value, field, userArr)
-				fmt.Println(users)
 				for _, user := range users {
 					fmt.Println(user)
 				}
@@ -55,16 +58,22 @@ func main() {
 				for _, ticket := range tickets {
 					fmt.Println(ticket)
 				}
-				fmt.Println(tickets)
 			case "3":
 				organizations := SearchOrganizations(value, field, organizationArr)
 				for _, organization := range organizations {
 					fmt.Println(organization)
 				}
 			}
-
+			enter, _ := reader.ReadString('\n')
+			ClearTerminal()
+			fmt.Print(enter)
 		case "2":
+			reader := bufio.NewReader(os.Stdin)
+			ClearTerminal()
 			DisplaySearchableFields()
+			enter, _ := reader.ReadString('\n')
+			ClearTerminal()
+			fmt.Print(enter)
 		case "quit":
 			break
 		default:
@@ -78,9 +87,13 @@ func main() {
 
 }
 
-
-func SearchTickets(textSearch, fieldSearch string, tickets []model.Ticket) []model.Ticket {
-	var ticketsRes []model.Ticket
+func ClearTerminal() {
+	c := exec.Command("clear")
+	c.Stdout = os.Stdout
+	c.Run()
+}
+func SearchTickets(textSearch, fieldSearch string, tickets []*model.Ticket) []*model.Ticket {
+	var ticketsRes []*model.Ticket
 	switch fieldSearch {
 	case "_id":
 		for _, user := range tickets {
@@ -171,12 +184,12 @@ func SearchTickets(textSearch, fieldSearch string, tickets []model.Ticket) []mod
 			}
 		}
 	default:
-		fmt.Println("Field text is not valid.")
+		fmt.Println("Error: Field text is not valid.")
 	}
 	return ticketsRes
 }
-func SearchOrganizations(textSearch, fieldSearch string, organizations []model.Organization) []model.Organization {
-	var organizationRes []model.Organization
+func SearchOrganizations(textSearch, fieldSearch string, organizations []*model.Organization) []*model.Organization {
+	var organizationRes []*model.Organization
 	switch fieldSearch {
 	case "_id":
 		searchVal, _ := strconv.Atoi(textSearch)
@@ -229,12 +242,12 @@ func SearchOrganizations(textSearch, fieldSearch string, organizations []model.O
 			}
 		}
 	default:
-		fmt.Println("Field text is not valid.")
+		fmt.Println("Error: Field text is not valid.")
 	}
 	return organizationRes
 }
-func  SearchUsers(textSearch, fieldSearch string, users []model.User) []model.User {
-	var usersRes []model.User
+func SearchUsers(textSearch, fieldSearch string, users []*model.User) []*model.User {
+	var usersRes []*model.User
 	switch fieldSearch {
 	case "_id":
 		searchVal, _ := strconv.Atoi(textSearch)
@@ -351,7 +364,7 @@ func  SearchUsers(textSearch, fieldSearch string, users []model.User) []model.Us
 				}
 			}
 		default:
-			fmt.Println("Field text is not valid.")
+			fmt.Println("Error: Field text is not valid.")
 	}
 	return usersRes
 }
