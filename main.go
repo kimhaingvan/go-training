@@ -2,41 +2,23 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+	"workspace/data"
 	"workspace/model"
+	"workspace/service"
 )
 
 func main() {
-	userJsonFile, userErr := os.Open("data/users.json")
-	ticketJsonFile, ticketErr := os.Open("data/tickets.json")
-	organizationJsonFile, organizationErr := os.Open("data/organizations.json")
 
-	if userErr != nil || ticketErr != nil || organizationErr != nil {
-		fmt.Println("Lỗi khi mở file nè")
-	}
+	var users []*model.User = data.GetUsersFromFile()
+	var tickets []*model.Ticket = data.GetTicketsFromFile()
+	var organizations []*model.Organization = data.GetOrganizationsFromFile()
+	service.MappingData(tickets, organizations, users)
 
-	userByteVal, _ := ioutil.ReadAll(userJsonFile)
-	ticketByteVal, _ := ioutil.ReadAll(ticketJsonFile)
-	organizationByteVal, _ := ioutil.ReadAll(organizationJsonFile)
-
-	var userArr []*model.User
-	var ticketArr []*model.Ticket
-	var organizationArr []*model.Organization
-
-	json.Unmarshal([]byte(userByteVal), &userArr)
-	json.Unmarshal([]byte(ticketByteVal), &ticketArr)
-	json.Unmarshal([]byte(organizationByteVal), &organizationArr)
-
-	model.MappingData(ticketArr, organizationArr, userArr)
-	defer userJsonFile.Close()
-	defer ticketJsonFile.Close()
-	defer organizationJsonFile.Close()
 	for {
 		optionStr := DisplayAndReadOption()
 
@@ -49,17 +31,17 @@ func main() {
 			ClearTerminal()
 			switch dataTypeStr {
 			case "1":
-				users := SearchUsers(value, field, userArr)
+				users := SearchUsers(value, field, users)
 				for _, user := range users {
 					fmt.Println(user)
 				}
 			case "2":
-				tickets := SearchTickets(value, field, ticketArr)
+				tickets := SearchTickets(value, field, tickets)
 				for _, ticket := range tickets {
 					fmt.Println(ticket)
 				}
 			case "3":
-				organizations := SearchOrganizations(value, field, organizationArr)
+				organizations := SearchOrganizations(value, field, organizations)
 				for _, organization := range organizations {
 					fmt.Println(organization)
 				}
