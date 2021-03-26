@@ -8,48 +8,41 @@ import (
 	"workspace/model"
 )
 
-var usersFilePath = "data/users.json"
-var ticketsFilePath = "data/tickets.json"
-var organizationsFilePath = "data/organizations.json"
-
 func GetUsersFromFile() []*model.User {
 	var users []*model.User
-	userJsonFile, err := os.Open(usersFilePath)
+	userJsonFile, userErr := os.Open("data/users.json")
 
-	if err != nil {
+	if userErr != nil{
 		fmt.Println("Lỗi khi mở file nè")
 	}
-
 	userByteVal, _ := ioutil.ReadAll(userJsonFile)
+	json.Unmarshal([]byte(userByteVal), &users)
 	defer userJsonFile.Close()
-	json.Unmarshal([]byte(userByteVal), users)
 	return users
 }
 
 func GetTicketsFromFile() []*model.Ticket {
 	var tickets []*model.Ticket
-	ticketJsonFile, err := os.Open(ticketsFilePath)
+	ticketJsonFile, ticketErr := os.Open("data/tickets.json")
 
-	if err != nil {
+	if ticketErr != nil{
 		fmt.Println("Lỗi khi mở file nè")
 	}
-
-	ticketByteVal, _ := ioutil.ReadAll(ticketJsonFile)
+	userByteVal, _ := ioutil.ReadAll(ticketJsonFile)
+	json.Unmarshal([]byte(userByteVal), &tickets)
 	defer ticketJsonFile.Close()
-	json.Unmarshal([]byte(ticketByteVal), tickets)
 	return tickets
 }
 
 func GetOrganizationsFromFile() []*model.Organization {
 	var organizations []*model.Organization
-	organizationJsonFile, err := os.Open(organizationsFilePath)
+	organizationJsonFile, organizationErr := os.Open("data/organizations.json")
 
-	if err != nil {
+	if organizationErr != nil{
 		fmt.Println("Lỗi khi mở file nè")
 	}
-
-	organizationByteVal, _ := ioutil.ReadAll(organizationJsonFile)
+	userByteVal, _ := ioutil.ReadAll(organizationJsonFile)
+	json.Unmarshal([]byte(userByteVal), &organizations)
 	defer organizationJsonFile.Close()
-	json.Unmarshal([]byte(organizationByteVal), organizations)
 	return organizations
 }
